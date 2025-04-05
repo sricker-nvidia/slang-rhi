@@ -139,8 +139,17 @@ SubresourceRange Texture::resolveSubresourceRange(const SubresourceRange& range)
     SubresourceRange resolved = range;
     resolved.mipLevel = min(resolved.mipLevel, m_desc.mipLevelCount);
     resolved.mipLevelCount = min(resolved.mipLevelCount, m_desc.mipLevelCount - resolved.mipLevel);
-    resolved.baseArrayLayer = min(resolved.baseArrayLayer, m_desc.getLayerCount());
-    resolved.layerCount = min(resolved.layerCount, m_desc.getLayerCount() - resolved.baseArrayLayer);
+    if (m_desc.type == TextureType::Texture3D)
+    {
+        uint32_t maxDepth = max(m_desc.size.depth >> resolved.mipLevel, 1);
+        resolved.baseArrayLayer = min(resolved.baseArrayLayer, maxDepth);
+        resolved.layerCount = min(resolved.layerCount, maxDepth - resolved.baseArrayLayer);
+    }
+    else
+    {
+        resolved.baseArrayLayer = min(resolved.baseArrayLayer, m_desc.getLayerCount());
+        resolved.layerCount = min(resolved.layerCount, m_desc.getLayerCount() - resolved.baseArrayLayer);
+    }
     return resolved;
 }
 

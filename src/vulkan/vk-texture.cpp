@@ -107,6 +107,7 @@ TextureSubresourceView TextureImpl::getView(Format format, TextureAspect aspect,
     if (view.imageView)
         return view;
 
+    VkImageViewSlicedCreateInfoEXT viewSliceInfo = {};
     VkImageViewCreateInfo createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     createInfo.flags = 0;
@@ -136,6 +137,9 @@ TextureSubresourceView TextureImpl::getView(Format format, TextureAspect aspect,
         break;
     case TextureType::Texture3D:
         createInfo.viewType = VK_IMAGE_VIEW_TYPE_3D;
+        // TODO: We should use a VkImageViewSlicedCreateInfoEXT struct here
+        // but additional changes are needed to enable the imageSlicedViewOf3D
+        // feature.
         break;
     case TextureType::TextureCube:
         createInfo.viewType = VK_IMAGE_VIEW_TYPE_CUBE;
